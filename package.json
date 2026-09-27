@@ -1,0 +1,19 @@
+{
+  "name": "potts-plumbing-website",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test",
+    "assets:logos": "node scripts/process-logos.mjs"
+  },
+  "devDependencies": {
+    "astro": "^7.3.5",
+    "sharp": "^0.35.5"
+  }
+}

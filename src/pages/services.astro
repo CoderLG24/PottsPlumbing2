@@ -1,0 +1,49 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ServiceExplorer from '../components/ServiceExplorer.astro';
+---
+
+<SiteLayout
+  title="Plumbing Services | Potts Plumbing, North Georgia"
+  description="Explore home plumbing services from Potts Plumbing, including repairs, water heaters, drains, fixtures, and more."
+  currentPage="services"
+>
+  <main id="main-content">
+    <section class="interior-hero">
+      <div class="container interior-hero__grid">
+        <p class="eyebrow">Services / Home plumbing</p>
+        <div>
+          <h1>Plumbing work for the rooms and routines of home.</h1>
+          <p>Leaks, water heaters, drains, fixtures, and the less-obvious jobs around a house. Garrett can also help with plumbing needs beyond the examples listed here.</p>
+        </div>
+      </div>
+    </section>
+    <section class="services-detail section-tint">
+      <div class="container services-detail__grid">
+        <aside class="services-detail__aside">
+          <p class="eyebrow">What needs attention?</p>
+          <p>Garrett can help clarify the issue or project, explain the options, and set clear expectations for the work and price.</p>
+          <a class="text-link" href="/contact/">Talk through a project</a>
+        </aside>
+        <div>
+          <h2 class="services-detail__heading">Common home plumbing requests</h2>
+          <ServiceExplorer />
+          <div class="services-note">
+            <span class="services-note__rule" aria-hidden="true"></span>
+            <p>Not every plumbing job fits a category. Send Garrett the details and ask whether your project is a fit.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="pricing-section section-rule">
+      <div class="container pricing-section__inner">
+        <p class="eyebrow">Before work begins</p>
+        <div>
+          <h2>Transparent pricing, with the scope explained.</h2>
+          <p>Ask about the work involved and the price before deciding how you would like to proceed. Clear expectations are part of the service.</p>
+        </div>
+        <a class="button-dark" href="mailto:gtpservices212@gmail.com">Email Garrett about your project</a>
+      </div>
+    </section>
+  </main>
+</SiteLayout>
