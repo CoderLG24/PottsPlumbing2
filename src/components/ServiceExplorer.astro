@@ -1,0 +1,27 @@
+---
+import { plumbingServices } from '../data/services.js';
+import Icon from './Icon.astro';
+
+const { openFirst = false } = Astro.props;
+---
+
+<div class="service-explorer">
+  {plumbingServices.map((service, index) => (
+    <details class="service-disclosure" id={`service-${service.id}`} open={openFirst && index === 0}>
+      <summary>
+        <Icon name={service.icon} class="service-disclosure__icon" />
+        <span class="service-disclosure__heading">
+          <h3 class="service-disclosure__title">{service.title}</h3>
+          <span class="service-disclosure__summary">{service.summary}</span>
+        </span>
+        <span class="service-disclosure__marker" aria-hidden="true"></span>
+      </summary>
+      <div class="service-disclosure__content">
+        <p>{service.description}</p>
+        <ul>
+          {service.examples.map((example) => <li>{example}</li>)}
+        </ul>
+      </div>
+    </details>
+  ))}
+</div>
