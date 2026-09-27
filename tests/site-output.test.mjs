@@ -65,6 +65,17 @@ test('Home uses the supplied wordmark and highlights its service standards with 
   assert.equal((brandCard.match(/data-icon=/g) ?? []).length, 2);
 });
 
+test('Mobile Home places the logo panel before a grouped contact action', () => {
+  const homeHero = homeHtml.match(/<section class="home-hero">[\s\S]*?<\/section>/)?.[0];
+
+  assert.ok(homeHero, 'Expected the home hero section');
+  const copyPosition = homeHero.indexOf('home-hero__copy');
+  const brandPosition = homeHero.indexOf('brand-card');
+  const contactPosition = homeHero.indexOf('home-hero__contact');
+
+  assert.ok(copyPosition >= 0 && brandPosition > copyPosition && contactPosition > brandPosition);
+});
+
 test('Home and Services expose the approved categories and useful home-plumbing examples', () => {
   const categories = [
     'Leaks & home repairs',
@@ -93,11 +104,25 @@ test('Home and Services expose the approved categories and useful home-plumbing 
 
 test('Home, About, and Contact make it easy to start without diagnosing the problem', () => {
   assert.match(homeHtml, /You do not need to diagnose the problem/i);
-  assert.match(homeHtml, /Garrett (?:can help|will help).{0,100}(?:options|next steps|price)/i);
+  assert.match(homeHtml, /A brief description is enough to start a conversation about the options, next steps, and price/i);
   assert.doesNotMatch(aboutHtml, /Understand the issue|Describe what you are seeing/i);
   assert.match(aboutHtml, /no diagnosis needed/i);
   assert.match(contactHtml, /No need to diagnose anything/i);
   assert.match(contactHtml, /A brief note is enough/i);
+});
+
+test('Garrett is mentioned sparingly in page content', () => {
+  for (const [label, html, maximumMentions] of [
+    ['Home', homeHtml, 1],
+    ['Services', servicesHtml, 1],
+    ['About', aboutHtml, 1],
+    ['Contact', contactHtml, 1],
+  ]) {
+    const mainContent = html.match(/<main\b[\s\S]*?<\/main>/)?.[0] ?? '';
+    const mentions = mainContent.match(/\bGarrett\b/g) ?? [];
+
+    assert.ok(mentions.length <= maximumMentions, `Expected no more than ${maximumMentions} Garrett mention(s) on ${label}`);
+  }
 });
 
 test('Home and Services avoid fabricated reviews, hours, and unsupported credentials', () => {
@@ -166,11 +191,16 @@ test('Legacy hand-authored pages and scripts are retired after the Astro routes 
 
 test('Shared styles remain responsive, keyboard-friendly, and independent of external assets', () => {
   const styles = readFileSync('src/styles/global.css', 'utf8');
+  const mobileStyles = styles.slice(styles.indexOf('@media (max-width: 48rem)'));
 
   assert.match(styles, /@media\s*\(max-width:\s*48rem\)/);
   assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(styles, /\.mobile-menu summary\s*\{/);
   assert.match(styles, /\.service-disclosure\[open\]/);
+  assert.match(mobileStyles, /\.mobile-menu\s*\{[^}]*margin-left:\s*0/);
+  assert.match(mobileStyles, /\.mobile-menu nav\s*\{[^}]*left:\s*0/);
+  assert.match(mobileStyles, /\.mobile-menu nav\s*\{[^}]*right:\s*auto/);
+  assert.match(mobileStyles, /\.brand-card__standards\s*\{[^}]*grid-template-columns:\s*repeat\(2/);
   assert.match(styles, /calc\(100% - var\(--page-gutter\) - var\(--page-gutter\)\)/);
   assert.doesNotMatch(styles, /@import\s|https?:\/\//i);
   assert.doesNotMatch(styles, /[\u2190-\u21ff\u27a1]/u);

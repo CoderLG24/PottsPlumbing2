@@ -18,14 +18,6 @@ import Icon from '../components/Icon.astro';
           <p class="home-hero__trust">Trusted by North Georgia</p>
           <h1>Thoughtful plumbing for North Georgia homes.</h1>
           <p class="home-hero__intro">From a persistent leak to a fixture update, Potts Plumbing helps homeowners with the plumbing work that keeps daily life moving. Garrett Potts serves communities across North Georgia.</p>
-          <div class="contact-actions">
-            <a class="email-action" href="mailto:gtpservices212@gmail.com">
-              <span class="email-action__label">Email Garrett</span>
-              <span class="email-action__address">gtpservices212@gmail.com</span>
-            </a>
-            <a class="phone-action" href="tel:+17706853901">(770) 685-3901</a>
-          </div>
-          <p class="home-hero__note">Share what is happening at home and the best way to reach you.</p>
         </div>
         <aside class="brand-card" aria-label="Potts Plumbing services">
           <img class="brand-card__logo" src="/images/potts-wordmark.png" width="666" height="544" alt="Potts Plumbing, 770-685-3901" fetchpriority="high" />
@@ -40,6 +32,16 @@ import Icon from '../components/Icon.astro';
             </div>
           </div>
         </aside>
+        <div class="home-hero__contact">
+          <div class="contact-actions">
+            <a class="email-action" href="mailto:gtpservices212@gmail.com">
+              <span class="email-action__label">Email about your project</span>
+              <span class="email-action__address">gtpservices212@gmail.com</span>
+            </a>
+            <a class="phone-action" href="tel:+17706853901">(770) 685-3901</a>
+          </div>
+          <p class="home-hero__note">A short note is enough to get started.</p>
+        </div>
       </div>
     </section>
 
@@ -48,7 +50,7 @@ import Icon from '../components/Icon.astro';
         <p class="eyebrow">A straightforward place to begin</p>
         <div>
           <h2>Good plumbing starts with a clear picture of the problem.</h2>
-          <p>You do not need to diagnose the problem. Share what you have noticed, and Garrett can help clarify the issue, explain the options, and set clear expectations for the work and price.</p>
+          <p>You do not need to diagnose the problem. A brief description is enough to start a conversation about the options, next steps, and price.</p>
         </div>
       </div>
     </section>
@@ -60,7 +62,7 @@ import Icon from '../components/Icon.astro';
             <p class="eyebrow">01 / Home plumbing</p>
             <h2>From small repairs to the projects around them.</h2>
           </div>
-          <p>Explore common home plumbing requests below. Open a service to see examples, or ask Garrett about a job that is not on the list.</p>
+          <p>Explore common home plumbing requests below. Open a service to see examples, or ask about a job that is not on the list.</p>
         </div>
         <ServiceExplorer openFirst={true} />
         <div class="section-after-link"><a href="/services/">See the full service overview</a></div>
@@ -72,14 +74,14 @@ import Icon from '../components/Icon.astro';
         <div class="standards-panel__intro">
           <p class="eyebrow">02 / How the work should feel</p>
           <h2>Clear expectations make a better experience.</h2>
-          <p>Garrett works with you to clarify the project, explain the proposed work, and discuss pricing before anything begins.</p>
+          <p>The proposed work and pricing are explained before anything begins, giving you a clear basis for deciding what works for your home.</p>
         </div>
         <div class="standards-list">
           <article class="standard-item">
             <Icon name="pricing" class="standard-item__icon" />
             <div>
               <h3>Transparent pricing</h3>
-              <p>Garrett explains the scope and price before work begins, so you can decide how you would like to proceed.</p>
+              <p>The scope and price are explained before work begins, so you can decide how you would like to proceed.</p>
             </div>
           </article>
           <article class="standard-item">
@@ -98,7 +100,7 @@ import Icon from '../components/Icon.astro';
         <div class="area-intro">
           <p class="eyebrow">03 / North Georgia</p>
           <h2>Local plumbing, across the region.</h2>
-          <p>Potts Plumbing serves North Georgia communities, including the towns listed here. Contact Garrett to confirm service for your address and project.</p>
+          <p>Potts Plumbing serves North Georgia communities, including the towns listed here. Use the contact page to check service for your address and project.</p>
           <a class="text-link" href="/contact/">Ask about your location</a>
         </div>
         <ServiceAreaList />
@@ -113,7 +115,7 @@ import Icon from '../components/Icon.astro';
           <p>Send a short note about the issue, the room, and your town.</p>
         </div>
         <div class="home-contact-band__actions">
-          <a class="button-light" href="mailto:gtpservices212@gmail.com">Email Garrett</a>
+          <a class="button-light" href="mailto:gtpservices212@gmail.com">Send an email</a>
           <a href="tel:+17706853901">(770) 685-3901</a>
         </div>
       </div>
