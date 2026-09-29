@@ -11,12 +11,14 @@ const { title, description, currentPage } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#102d4d" />
+    <meta name="theme-color" content="#102f43" />
     <meta name="description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Potts Plumbing" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <title>{title}</title>
+    <link rel="icon" type="image/png" href="/images/potts-mark.png" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>

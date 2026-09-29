@@ -1,21 +1,6 @@
 ---
-const towns = [
-  'Talking Rock',
-  'Jasper',
-  'Ellijay',
-  'Nelson',
-  'Tate',
-  'Ball Ground',
-  'Dawsonville',
-  'Dahlonega',
-  'Cumming',
-  'Canton',
-  'Woodstock',
-];
+import { business } from '../data/business.js';
 ---
-
-<ul class="town-list">
-  {towns.map((town, index) => (
-    <li><span class="town-list__number">{String(index + 1).padStart(2, '0')}</span><span>{town}</span></li>
-  ))}
+<ul class="town-list" aria-label="North Georgia service communities">
+  {business.towns.map(town => <li>{town}</li>)}
 </ul>

@@ -1,4 +1,6 @@
 ---
+import Icon from './Icon.astro';
+import { business } from '../data/business.js';
 const { currentPage } = Astro.props;
 const navigation = [
   { label: 'Home', href: '/', id: 'home' },
@@ -7,34 +9,34 @@ const navigation = [
   { label: 'Contact', href: '/contact/', id: 'contact' },
 ];
 ---
-
 <header class="site-header">
-  <div class="site-header__top container">
+  <div class="container header-inner">
     <a class="brand" href="/" aria-label="Potts Plumbing home">
-      <img src="/images/potts-mark.png" width="44" height="54" alt="" fetchpriority="high" />
-      <span class="brand__name">Potts Plumbing<span class="brand__region">North Georgia</span></span>
+      <img src="/images/potts-mark.png" width="44" height="54" alt="" />
+      <span class="brand-name">Potts Plumbing<span class="brand-region">North Georgia</span></span>
     </a>
-    <div class="header-contact" aria-label="Contact Potts Plumbing">
-      <a class="header-contact__email" href="mailto:gtpservices212@gmail.com">Email</a>
-      <a class="header-contact__phone" href="tel:+17706853901">(770) 685-3901</a>
-    </div>
-  </div>
-  <div class="site-header__navigation">
-    <div class="container navigation-wrap">
-      <nav class="desktop-nav" aria-label="Primary">
-        {navigation.map((item) => (
-          <a href={item.href} aria-current={currentPage === item.id ? 'page' : undefined}>{item.label}</a>
-        ))}
+    <nav class="desktop-nav" aria-label="Primary">
+      {navigation.map(item => <a href={item.href} aria-current={currentPage === item.id ? 'page' : undefined}>{item.label}</a>)}
+    </nav>
+    <a class="button button-primary header-email" href={business.emailHref}><Icon name="email" /><span>Email us</span></a>
+    <details class="mobile-menu">
+      <summary><span class="menu-glyph" aria-hidden="true"></span><span>Menu</span></summary>
+      <nav aria-label="Mobile">
+        {navigation.map(item => <a href={item.href} aria-current={currentPage === item.id ? 'page' : undefined}>{item.label}</a>)}
+        <a class="mobile-nav-phone" href={business.phoneHref}><Icon name="phone" />{business.phone}</a>
       </nav>
-      <details class="mobile-menu">
-        <summary><span>Menu</span><span class="menu-glyph" aria-hidden="true"></span></summary>
-        <nav aria-label="Mobile">
-          {navigation.map((item) => (
-            <a href={item.href} aria-current={currentPage === item.id ? 'page' : undefined}>{item.label}</a>
-          ))}
-        </nav>
-      </details>
-      <span class="navigation-note">Residential plumbing · North Georgia</span>
-    </div>
+    </details>
   </div>
 </header>
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+  const trigger = menu?.querySelector('summary');
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && menu?.open) { menu.open = false; trigger?.focus(); }
+  });
+  document.addEventListener('click', event => {
+    if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+  });
+  const wideScreen = window.matchMedia('(min-width: 64.01rem)');
+  wideScreen.addEventListener('change', () => { if (wideScreen.matches && menu) menu.open = false; });
+</script>

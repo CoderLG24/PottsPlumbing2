@@ -1,124 +1,49 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import ContactActions from '../components/ContactActions.astro';
+import ContactBand from '../components/ContactBand.astro';
 import ServiceAreaList from '../components/ServiceAreaList.astro';
-import ServiceExplorer from '../components/ServiceExplorer.astro';
 import Icon from '../components/Icon.astro';
+import { plumbingServices } from '../data/services.js';
+const teasers = ['Drips, leaks & running toilets', 'Repair & replacement', 'Slow drains & stubborn clogs', 'Repairs, replacements & updates'];
 ---
-
-<SiteLayout
-  title="Potts Plumbing | North Georgia Home Plumbing"
-  description="Home plumbing services from Potts Plumbing, serving Talking Rock and communities across North Georgia."
-  currentPage="home"
->
+<SiteLayout title="Potts Plumbing | Your Local North Georgia Plumber" description="Residential plumbing in North Georgia. Get help with leaks, water heaters, drains, and fixtures. Email Potts Plumbing or call (770) 685-3901." currentPage="home">
   <main id="main-content">
-    <section class="home-hero">
-      <div class="container home-hero__grid">
-        <div class="home-hero__copy">
-          <p class="eyebrow">Residential plumbing · North Georgia</p>
-          <p class="home-hero__trust">Trusted by North Georgia</p>
-          <h1>Thoughtful plumbing for North Georgia homes.</h1>
-          <p class="home-hero__intro">From a persistent leak to a fixture update, Potts Plumbing helps homeowners with the plumbing work that keeps daily life moving. Garrett Potts serves communities across North Georgia.</p>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="small-rule" aria-hidden="true"></span>Residential plumbing · North Georgia</p>
+          <h1>Your home.<br />Your <em>local</em><br />plumber.</h1>
+          <p class="hero-intro">From a leaking faucet to a new water heater, get the help your home needs with Potts Plumbing.</p>
+          <ContactActions />
+          <p class="action-note">A short email is all it takes to get started.</p>
         </div>
-        <aside class="brand-card" aria-label="Potts Plumbing services">
-          <img class="brand-card__logo" src="/images/potts-wordmark.png" width="666" height="544" alt="Potts Plumbing, 770-685-3901" fetchpriority="high" />
-          <div class="brand-card__standards">
-            <div class="brand-card__standard">
-              <Icon name="pricing" class="brand-card__icon" />
-              <span>Transparent pricing</span>
-            </div>
-            <div class="brand-card__standard">
-              <Icon name="service" class="brand-card__icon" />
-              <span>Best-in-class service</span>
-            </div>
+        <div class="service-picker">
+          <div class="picker-heading"><span class="eyebrow">How can we help?</span><span class="picker-number">01—04</span></div>
+          <h2>A fix for the everyday.<br />A hand with the bigger jobs.</h2>
+          <div class="picker-links">
+            {plumbingServices.slice(0, 4).map((service, index) => <a href={`/services/#${service.id}`}><span class="service-icon"><Icon name={service.icon} /></span><span><strong>{service.title}</strong><small>{teasers[index]}</small></span><Icon name="arrow" class="row-arrow" /></a>)}
           </div>
-        </aside>
-        <div class="home-hero__contact">
-          <div class="contact-actions">
-            <a class="email-action" href="mailto:gtpservices212@gmail.com">
-              <span class="email-action__label">Email about your project</span>
-              <span class="email-action__address">gtpservices212@gmail.com</span>
-            </a>
-            <a class="phone-action" href="tel:+17706853901">(770) 685-3901</a>
-          </div>
-          <p class="home-hero__note">A short note is enough to get started.</p>
+          <a class="picker-more" href="/services/#other-home-projects">Other home projects<Icon name="arrow" /></a>
+        </div>
+      </div>
+      <div class="container hero-foot"><p>Trusted by North Georgia</p><span>Locally owned by Garrett Potts</span><a href="/about/">Meet Potts Plumbing<Icon name="arrow" /></a></div>
+    </section>
+    <section class="section approach-section">
+      <div class="container approach-grid">
+        <div><p class="eyebrow">Good work. No guesswork.</p><h2>A clear conversation.<br />A better experience.</h2><a class="text-link" href="/about/">Our approach<Icon name="arrow" /></a></div>
+        <div class="standards">
+          <article><span class="standard-number">01</span><div><h3>Transparent pricing</h3><p>Understand the work and the price before you decide how to move forward.</p></div></article>
+          <article><span class="standard-number">02</span><div><h3>Best-in-class service</h3><p>Clear communication, care in the details, and respect for your home.</p></div></article>
         </div>
       </div>
     </section>
-
-    <section class="home-introduction section-rule">
-      <div class="container introduction-grid">
-        <p class="eyebrow">A straightforward place to begin</p>
-        <div>
-          <h2>Good plumbing starts with a clear picture of the problem.</h2>
-          <p>You do not need to diagnose the problem. A brief description is enough to start a conversation about the options, next steps, and price.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="home-services section-tint">
-      <div class="container">
-        <div class="section-heading section-heading--split">
-          <div>
-            <p class="eyebrow">01 / Home plumbing</p>
-            <h2>From small repairs to the projects around them.</h2>
-          </div>
-          <p>Explore common home plumbing requests below. Open a service to see examples, or ask about a job that is not on the list.</p>
-        </div>
-        <ServiceExplorer openFirst={true} />
-        <div class="section-after-link"><a href="/services/">See the full service overview</a></div>
-      </div>
-    </section>
-
-    <section class="home-standards">
-      <div class="container standards-panel">
-        <div class="standards-panel__intro">
-          <p class="eyebrow">02 / How the work should feel</p>
-          <h2>Clear expectations make a better experience.</h2>
-          <p>The proposed work and pricing are explained before anything begins, giving you a clear basis for deciding what works for your home.</p>
-        </div>
-        <div class="standards-list">
-          <article class="standard-item">
-            <Icon name="pricing" class="standard-item__icon" />
-            <div>
-              <h3>Transparent pricing</h3>
-              <p>The scope and price are explained before work begins, so you can decide how you would like to proceed.</p>
-            </div>
-          </article>
-          <article class="standard-item">
-            <Icon name="service" class="standard-item__icon" />
-            <div>
-              <h3>Best-in-class service</h3>
-              <p>Thoughtful communication, respect for your home, and care in the details belong in every plumbing visit.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="home-service-area section-rule">
+    <section class="section area-section" id="service-area">
       <div class="container area-grid">
-        <div class="area-intro">
-          <p class="eyebrow">03 / North Georgia</p>
-          <h2>Local plumbing, across the region.</h2>
-          <p>Potts Plumbing serves North Georgia communities, including the towns listed here. Use the contact page to check service for your address and project.</p>
-          <a class="text-link" href="/contact/">Ask about your location</a>
-        </div>
+        <div><p class="eyebrow"><Icon name="pin" />Close to home</p><h2>North Georgia.<br />Our kind of place.</h2><p>Serving these communities and nearby areas. Send your town and project details to check service for your home.</p><a class="text-link" href="/contact/">Ask about your area<Icon name="arrow" /></a></div>
         <ServiceAreaList />
       </div>
     </section>
-
-    <section class="home-contact-band">
-      <div class="container home-contact-band__inner">
-        <div>
-          <p class="eyebrow">A clear next step</p>
-          <h2>Have a home plumbing project in mind?</h2>
-          <p>Send a short note about the issue, the room, and your town.</p>
-        </div>
-        <div class="home-contact-band__actions">
-          <a class="button-light" href="mailto:gtpservices212@gmail.com">Send an email</a>
-          <a href="tel:+17706853901">(770) 685-3901</a>
-        </div>
-      </div>
-    </section>
+    <ContactBand />
   </main>
 </SiteLayout>
