@@ -38,9 +38,10 @@ for (const page of htmlPages) {
       }
     }
   });
-  test(page.label + ' does not introduce invented credibility or a fake form', () => {
+  test(page.label + ' does not introduce invented credibility', () => {
     assert.doesNotMatch(page.html, /\b(?:licensed|insured|24-hour|five.star|\d+ years of experience|guaranteed)\b/i);
-    assert.doesNotMatch(page.html, /<form\b|<iframe\b|<video\b|application\/ld\+json/i);
+    assert.doesNotMatch(page.html, /<iframe\b|<video\b|application\/ld\+json/i);
+    if (page.label !== 'Home') assert.doesNotMatch(page.html, /<form\b/i);
     assert.doesNotMatch(page.html, /example\.com|YOUR_DOMAIN|\p{Emoji_Presentation}/u);
   });
 }
@@ -51,16 +52,28 @@ test('Every page has unique metadata', () => {
   assert.equal(new Set(titles).size, routes.length);
   assert.equal(new Set(descriptions).size, routes.length);
 });
-test('Home leads with a real contact action before the service chooser', () => {
+test('Home leads to its quote form before the service chooser', () => {
   const home = htmlPages[0].html;
   const main = home.slice(home.indexOf('<main'));
-  assert.ok(main.indexOf('mailto:') < main.indexOf('class="service-picker"'));
+  assert.ok(main.indexOf('href="#free-quote"') < main.indexOf('class="service-picker"'));
   assert.ok(main.indexOf('tel:') < main.indexOf('class="service-picker"'));
   assert.doesNotMatch(main, /class="brand-card"|class="service-disclosure"/);
   for (const service of plumbingServices) {
     assert.ok(home.includes('/services/#' + service.id));
   }
   for (const town of business.towns) assert.ok(home.includes(town));
+});
+test('Home quote form is detectable by Netlify and has a usable confirmation route', () => {
+  const home = htmlPages[0].html;
+  assert.match(home, /<form[^>]*name="quote-request"[^>]*method="POST"[^>]*action="\/thanks\/"[^>]*data-netlify="true"[^>]*netlify-honeypot="bot-field"/);
+  assert.match(home, /name="form-name" value="quote-request"/);
+  assert.match(home, /name="bot-field"/);
+  for (const field of ['name', 'phone', 'details']) {
+    assert.match(home, new RegExp(`name="${field}"[^>]*required`));
+  }
+  assert.match(home, /name="email" type="email"/);
+  assert.doesNotMatch(home, /name="location"|quote-location|ZIP code/i);
+  assert.match(readFileSync('dist/thanks/index.html', 'utf8'), /Thanks for reaching out/);
 });
 test('Services retains the full business service scope in crawlable HTML', () => {
   const services = decode(htmlPages[1].html);
@@ -82,6 +95,8 @@ test('Contact explains the email handoff and offers an accessible fallback', () 
 test('The supplied original images remain outside the main page payload', () => {
   for (const page of htmlPages) assert.doesNotMatch(page.html, /images\/image[01]/);
   assert.ok(statSync('dist/images/potts-mark.png').size < 150000);
+  assert.ok(existsSync('dist/images/potts-horizontal.png'));
+  for (const page of htmlPages) assert.doesNotMatch(page.html, /class="brand-name"/);
 });
 test('Static output includes a useful 404 and crawl-friendly robots file', () => {
   assert.ok(existsSync('dist/404.html'));

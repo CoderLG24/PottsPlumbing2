@@ -19,7 +19,7 @@ html { background: var(--paper); scroll-behavior: smooth; scroll-padding-block: 
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--body-font); font-size: 1rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 [hidden] { display: none !important; }
 img { display: block; max-width: 100%; height: auto; }
-button, input { font: inherit; }
+button, input, textarea { font: inherit; }
 button, summary, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-underline-offset: .25em; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
@@ -55,10 +55,8 @@ h3 { font-size: 1.28rem; font-weight: 650; letter-spacing: -.025em; line-height:
 /* One compact header. The contact color is reserved for real actions. */
 .site-header { position: relative; z-index: 10; border-bottom: 1px solid var(--line); background: var(--paper); }
 .header-inner { display: flex; align-items: center; gap: 2rem; min-height: 96px; }
-.brand { display: inline-flex; align-items: center; gap: .75rem; text-decoration: none; }
-.brand img { width: 36px; height: 46px; object-fit: contain; }
-.brand-name { display: grid; gap: .25rem; font-size: 1.23rem; font-weight: 750; letter-spacing: -.05em; line-height: 1.1; }
-.brand-region { font-size: .59rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.brand { display: inline-flex; align-items: center; text-decoration: none; }
+.brand img { width: clamp(185px, 19vw, 240px); height: auto; }
 .desktop-nav { display: flex; align-items: center; gap: 2rem; margin-left: auto; }
 .desktop-nav a { display: inline-flex; min-height: 44px; align-items: center; font-size: .88rem; font-weight: 600; text-decoration: none; }
 .desktop-nav a[aria-current='page'] { text-decoration: underline; text-underline-offset: .55rem; text-decoration-thickness: 2px; }
@@ -98,6 +96,24 @@ h3 { font-size: 1.28rem; font-weight: 650; letter-spacing: -.025em; line-height:
 .hero-foot > span { color: #bbd0dd; }
 .hero-foot a { display: inline-flex; align-items: center; gap: .65rem; min-height: 36px; margin-left: auto; }
 .hero-foot .site-icon { width: 1rem; }
+.quote-section { scroll-margin-top: 1rem; background: var(--ice); }
+.quote-grid { display: grid; grid-template-columns: .82fr 1.18fr; align-items: start; gap: clamp(2.5rem, 7vw, 7rem); }
+.quote-copy h2 { max-width: 13ch; margin-top: 1rem; }
+.quote-copy > p:not(.eyebrow) { max-width: 27rem; margin-top: 1.3rem; color: var(--muted); }
+.quote-copy .phone-link { margin-top: 1.5rem; }
+.quote-form { display: grid; gap: 1.15rem; padding: clamp(1.5rem, 3vw, 2.5rem); border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }
+.form-field { display: grid; gap: .4rem; min-width: 0; }
+.form-field label { font-size: .88rem; font-weight: 700; }
+.field-optional { color: var(--muted); font-size: .76rem; font-weight: 400; }
+.form-field input, .form-field textarea { width: 100%; min-height: 48px; padding: .7rem .8rem; border: 1px solid #a6b9c1; border-radius: 4px; color: var(--ink); background: var(--white); }
+.form-field textarea { min-height: 120px; resize: vertical; }
+.form-field input:focus, .form-field textarea:focus { border-color: #2678b0; }
+.form-field textarea::placeholder { color: #647987; }
+.quote-form-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem 1.5rem; }
+.quote-form-footer p { color: var(--muted); font-size: .76rem; }
+.quote-form-footer .button { cursor: pointer; }
+.honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 /* Quiet supporting sections replace repetitive paragraphs and oversized cards. */
 .approach-grid, .area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2.5rem, 7vw, 7rem); align-items: center; }
 .approach-grid h2, .area-grid h2, .about-copy h2, .faq-grid h2 { margin-top: 1rem; }
@@ -168,6 +184,9 @@ h3 { font-size: 1.28rem; font-weight: 650; letter-spacing: -.025em; line-height:
 .contact-call a { display: inline-flex; align-items: center; gap: .8rem; min-height: 44px; font-size: 1.35rem; font-weight: 600; text-decoration: none; }
 .contact-call a:hover { text-decoration: underline; }
 .contact-faq { background: var(--ice); }
+.thanks-page { min-height: 55vh; display: flex; align-items: center; padding-block: clamp(4rem, 10vw, 8rem); background: var(--ice); }
+.thanks-page h1 { margin-top: 1rem; }
+.thanks-page p:not(.eyebrow) { max-width: 35rem; margin-block: 1.5rem; color: var(--muted); }
 .faq-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 4rem; }
 .faq-list { border-top: 1px solid #becfd6; }
 .faq-list details { border-bottom: 1px solid #becfd6; }
@@ -223,10 +242,7 @@ h3 { font-size: 1.28rem; font-weight: 650; letter-spacing: -.025em; line-height:
   html { scroll-padding-bottom: 6.5rem; }
   body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
   .header-inner { min-height: 78px; gap: .8rem; }
-  .brand img { width: 28px; height: 38px; }
-  .brand { gap: .5rem; }
-  .brand-name { font-size: 1.06rem; }
-  .brand-region { font-size: .53rem; }
+  .brand img { width: 185px; }
   .header-email { display: none; }
   .mobile-menu { margin-left: auto; }
   .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; padding-block: 2.5rem; }
@@ -245,7 +261,8 @@ h3 { font-size: 1.28rem; font-weight: 650; letter-spacing: -.025em; line-height:
   .picker-links small { font-size: .76rem; }
   .hero-foot { align-items: flex-start; flex-direction: column; gap: .45rem; font-size: .77rem; padding-block: 1.35rem; }
   .hero-foot a { margin-left: 0; }
-  .approach-grid, .area-grid, .contact-band-inner, .about-grid, .contact-grid, .faq-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .approach-grid, .area-grid, .contact-band-inner, .about-grid, .contact-grid, .faq-grid, .quote-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .quote-copy h2 { max-width: 20ch; }
   .approach-grid .text-link { margin-top: 1rem; }
   .contact-band .contact-actions { justify-self: start; }
   .contact-band h2 { max-width: 20ch; }
@@ -277,6 +294,10 @@ h3 { font-size: 1.28rem; font-weight: 650; letter-spacing: -.025em; line-height:
   .mobile-contact-bar > a { min-height: 52px; display: flex; align-items: center; justify-content: center; gap: .45rem; font-size: .82rem; font-weight: 700; text-decoration: none; }
   .mobile-contact-bar .site-icon { width: 1.05rem; height: 1.05rem; }
   .mobile-contact-bar .button { padding-inline: .75rem; }
+}
+@media (max-width: 34rem) {
+  .form-row { grid-template-columns: 1fr; }
+  .quote-form-footer .button { width: 100%; }
 }
 @media (max-width: 23rem) {
   .hero .eyebrow { font-size: .58rem; letter-spacing: .06em; }

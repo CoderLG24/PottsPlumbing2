@@ -7,13 +7,13 @@ const navigation = [
   { label: 'Services', href: '/services/', id: 'services' },
   { label: 'About', href: '/about/', id: 'about' },
   { label: 'Contact', href: '/contact/', id: 'contact' },
+  { label: 'Free quote', href: '/#free-quote', id: 'quote' },
 ];
 ---
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="Potts Plumbing home">
-      <img src="/images/potts-mark.png" width="44" height="54" alt="" />
-      <span class="brand-name">Potts Plumbing<span class="brand-region">North Georgia</span></span>
+      <img src="/images/potts-horizontal.png" width="1326" height="226" alt="" />
     </a>
     <nav class="desktop-nav" aria-label="Primary">
       {navigation.map(item => <a href={item.href} aria-current={currentPage === item.id ? 'page' : undefined}>{item.label}</a>)}
