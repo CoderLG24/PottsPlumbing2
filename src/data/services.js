@@ -3,7 +3,7 @@ export const plumbingServices = [
     id: 'leaks-home-repairs',
     icon: 'repair',
     title: 'Leaks & home repairs',
-    summary: 'Garrett can help pinpoint the issue and explain a practical repair.',
+    summary: 'Help with leaks, visible damage, and everyday home repairs.',
     description: 'A leak can show up far from where it starts. Common home repair requests include leaking faucets, running toilets, visible pipe leaks, loose connections, and changes in water pressure.',
     examples: [
       'Leaking faucets and visible pipe leaks',
@@ -28,7 +28,7 @@ export const plumbingServices = [
     icon: 'drain',
     title: 'Drains & pipes',
     summary: 'Help with slow drains, recurring clogs, and pipe concerns.',
-    description: 'Slow sinks, clogged drains, and recurring backups can have different causes. Garrett can help clarify the concern and explain the options.',
+    description: 'Slow sinks, clogged drains, and recurring backups can have different causes. The right next step depends on the location and source of the problem.',
     examples: [
       'Clogged drains in sinks, tubs, and showers',
       'Slow drains and recurring blockages',
@@ -40,7 +40,7 @@ export const plumbingServices = [
     icon: 'fixture',
     title: 'Fixtures & bathrooms',
     summary: 'Refresh the fixtures and plumbing details used every day.',
-    description: 'Fixture work can be a focused repair or one part of a larger bathroom update. Garrett can help connect the plumbing work to the changes you have in mind.',
+    description: 'Fixture work can be a focused repair or one part of a larger bathroom update. Plumbing changes can be considered alongside the updates you have in mind.',
     examples: [
       'Faucets, sinks, toilets, and garbage disposals',
       'Showers, tubs, and bathroom fixture updates',

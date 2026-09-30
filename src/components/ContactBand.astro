@@ -1,0 +1,10 @@
+---
+import ContactActions from './ContactActions.astro';
+const { title = 'Let’s get your home flowing again.' } = Astro.props;
+---
+<section class="contact-band">
+  <div class="container contact-band-inner">
+    <div><p class="eyebrow">Your next step</p><h2>{title}</h2><p>Tell us what’s happening. We’ll take it from there.</p></div>
+    <ContactActions />
+  </div>
+</section>

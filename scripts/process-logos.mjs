@@ -104,3 +104,23 @@ async function createTransparentLogo({ input, output, palette }) {
 for (const logo of logos) {
   await createTransparentLogo(logo);
 }
+
+// Arrange the two supplied wordmark lines side by side for compact navigation.
+// The full, unaltered stacked mark remains available for the About page.
+const stackedPath = path.join(projectRoot, 'public/images/potts-wordmark.png');
+const [potts, plumbing] = await Promise.all([
+  sharp(await sharp(stackedPath).extract({ left: 0, top: 0, width: 666, height: 246 }).png().toBuffer()).trim().png().toBuffer({ resolveWithObject: true }),
+  sharp(await sharp(stackedPath).extract({ left: 0, top: 248, width: 666, height: 188 }).png().toBuffer()).trim().png().toBuffer({ resolveWithObject: true }),
+]);
+const gap = 75;
+const horizontalHeight = Math.max(potts.info.height, plumbing.info.height);
+const horizontalWidth = potts.info.width + gap + plumbing.info.width;
+const horizontalPath = path.join(projectRoot, 'public/images/potts-horizontal.png');
+await sharp({ create: { width: horizontalWidth, height: horizontalHeight, channels: 4, background: '#00000000' } })
+  .composite([
+    { input: potts.data, left: 0, top: Math.round((horizontalHeight - potts.info.height) / 2) },
+    { input: plumbing.data, left: potts.info.width + gap, top: Math.round((horizontalHeight - plumbing.info.height) / 2) },
+  ])
+  .png()
+  .toFile(horizontalPath);
+process.stdout.write(`public/images/potts-horizontal.png: ${horizontalWidth}x${horizontalHeight}\n`);

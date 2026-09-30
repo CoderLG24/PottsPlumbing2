@@ -1,0 +1,9 @@
+---
+import Icon from './Icon.astro';
+import { business } from '../data/business.js';
+const { label = 'Email about your project', phone = true } = Astro.props;
+---
+<div class="contact-actions">
+  <a class="button button-primary" href={business.emailHref}><Icon name="email" />{label}<Icon name="arrow" /></a>
+  {phone && <a class="phone-link" href={business.phoneHref}><Icon name="phone" /><span>{business.phone}</span></a>}
+</div>

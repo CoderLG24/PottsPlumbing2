@@ -1,59 +1,37 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import Icon from '../components/Icon.astro';
+import { business } from '../data/business.js';
 ---
-
-<SiteLayout
-  title="Contact Potts Plumbing | North Georgia"
-  description="Contact Potts Plumbing about home plumbing work in North Georgia by email or phone."
-  currentPage="contact"
->
+<SiteLayout title="Contact Potts Plumbing | Email or Call (770) 685-3901" description="Talk to Potts Plumbing about your North Georgia home. Email gtpservices212@gmail.com or call (770) 685-3901 to discuss your plumbing project." currentPage="contact">
   <main id="main-content">
-    <section class="interior-hero contact-hero">
-      <div class="container interior-hero__grid">
-        <p class="eyebrow">Contact / Potts Plumbing</p>
-        <div>
-          <h1>A clear conversation is a good place to start.</h1>
-          <p>Get in touch with Garrett about a plumbing repair, an update, or a home project you are considering.</p>
-        </div>
+    <section class="contact-page section"><div class="container contact-grid">
+      <div class="contact-copy"><p class="eyebrow">Let’s talk plumbing</p><h1>A little help<br />starts <em>here.</em></h1><p>Tell us what’s happening and where you’re located. A brief note is enough—no need to diagnose anything.</p>
+        <div class="contact-checklist"><h2>Helpful details to include</h2><ul class="check-list"><li><Icon name="check" />Your town or service location</li><li><Icon name="check" />What you’re noticing or planning</li><li><Icon name="check" />The best way to reach you</li></ul><p>You can attach a photo to your email, too.</p></div>
       </div>
-    </section>
-
-    <section class="contact-start section-rule">
-      <div class="container contact-start__grid">
-        <aside class="contact-start__copy">
-          <p class="eyebrow">Get in touch</p>
-          <h2>Share the details that will help frame the conversation.</h2>
-          <p>A brief note is enough. Garrett can help clarify the issue and set clear expectations for the work and price.</p>
-        </aside>
-        <div class="contact-start__options">
-          <div class="contact-option contact-option--email">
-            <p class="eyebrow">Email</p>
-            <a class="contact-option__primary" href="mailto:gtpservices212@gmail.com">gtpservices212@gmail.com</a>
-            <p>The email link opens your email app. Share whatever you know; Garrett can help with the next steps.</p>
-            <a class="button-dark" href="mailto:gtpservices212@gmail.com">Email Garrett</a>
-          </div>
-          <div class="contact-option contact-option--phone">
-            <p class="eyebrow">Phone</p>
-            <a class="contact-option__primary" href="tel:+17706853901">(770) 685-3901</a>
-            <p>Phone is available if that is more convenient.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="contact-details section-tint">
-      <div class="container contact-details__grid">
-          <p class="eyebrow">Optional details</p>
-        <div>
-          <h2>A few details can help</h2>
-          <p>No need to diagnose anything. Share as much or as little as you know; Garrett can guide the conversation from there.</p>
-          <ul>
-            <li>What you have noticed, in a few words</li>
-            <li>The room or fixture, if you know</li>
-            <li>Your town, to help confirm availability</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      <div class="contact-card"><span class="contact-card-icon"><Icon name="email" /></span><p class="eyebrow">Direct to Potts Plumbing</p><h2>Tell us about<br />your project.</h2><a class="button button-primary" href={business.emailHref}>Start an email<Icon name="arrow" /></a><p class="email-explainer">Opens your email app. Send your message there.</p><div class="copy-email"><span id="email-address">{business.email}</span><button type="button" class="copy-button" hidden aria-describedby="email-address">Copy email</button><span class="copy-status sr-only" role="status" aria-live="polite"></span></div><div class="contact-call"><span>Prefer a conversation?</span><a href={business.phoneHref}><Icon name="phone" />{business.phone}</a></div></div>
+    </div></section>
+    <section class="section contact-faq"><div class="container faq-grid"><div><p class="eyebrow">Before you get in touch</p><h2>A few helpful<br />answers.</h2></div><div class="faq-list">
+      <details><summary>Do you serve my area?<span aria-hidden="true">+</span></summary><p>Potts Plumbing serves North Georgia, including Talking Rock, Jasper, Ellijay, Nelson, Tate, Ball Ground, Dawsonville, Dahlonega, Cumming, Canton, and Woodstock. Share your location to confirm service for your home.</p></details>
+      <details><summary>What if I don’t know what’s wrong?<span aria-hidden="true">+</span></summary><p>That’s fine. Describe what you can see or hear, where it’s happening, and when it started. You don’t need to identify the cause before getting in touch.</p></details>
+      <details><summary>How do I find out the price?<span aria-hidden="true">+</span></summary><p>The price depends on the work your home needs. Send a few details so we can discuss the project and the next steps. The proposed work and pricing are explained before you decide to proceed.</p></details>
+    </div></div></section>
   </main>
 </SiteLayout>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.copy-button');
+  const address = document.querySelector('#email-address');
+  const status = document.querySelector('.copy-status');
+  if (button && navigator.clipboard) {
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(address?.textContent ?? '');
+        button.textContent = 'Copied';
+        if (status) status.textContent = 'Email address copied to clipboard.';
+      } catch {
+        if (status) status.textContent = 'Could not copy. Select the email address above to copy it manually.';
+      }
+    });
+  }
+</script>

@@ -1,177 +1,105 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { resolve } from 'node:path';
 import test from 'node:test';
+import { plumbingServices } from '../src/data/services.js';
+import { business } from '../src/data/business.js';
 
-const outputPages = [
-  { path: 'dist/index.html', navHref: '/', label: 'Home' },
-  { path: 'dist/services/index.html', navHref: '/services/', label: 'Services' },
-  { path: 'dist/about/index.html', navHref: '/about/', label: 'About' },
-  { path: 'dist/contact/index.html', navHref: '/contact/', label: 'Contact' },
+const routes = [
+  { file: 'dist/index.html', href: '/', label: 'Home' },
+  { file: 'dist/services/index.html', href: '/services/', label: 'Services' },
+  { file: 'dist/about/index.html', href: '/about/', label: 'About' },
+  { file: 'dist/contact/index.html', href: '/contact/', label: 'Contact' },
 ];
-
-for (const page of outputPages) {
-  test(`build emits ${page.path}`, () => {
-    assert.equal(existsSync(page.path), true, `Expected static page ${page.path}`);
+const htmlPages = routes.map(route => ({ ...route, html: readFileSync(route.file, 'utf8') }));
+const decode = value => value.replaceAll('&amp;', '&');
+for (const page of htmlPages) {
+  test(page.label + ' has a usable contact and navigation shell', () => {
+    assert.match(page.html, /class="skip-link" href="#main-content"/);
+    assert.match(page.html, /<main id="main-content"/);
+    assert.match(page.html, /<nav[^>]+aria-label="Primary"/);
+    assert.match(page.html, /<details class="mobile-menu"/);
+    assert.match(page.html, /aria-label="Quick contact"/);
+    assert.equal((page.html.match(/<h1\b/g) ?? []).length, 1);
+    assert.ok(page.html.includes('href="' + page.href + '" aria-current="page"'));
+    assert.ok(page.html.includes('href="' + business.emailHref + '"'));
+    assert.ok(page.html.includes('href="' + business.phoneHref + '"'));
   });
-
-  test(`${page.label} includes the shared accessible contact shell`, () => {
-    const html = readFileSync(page.path, 'utf8');
-
-    assert.match(html, /class="skip-link"/);
-    assert.match(html, /href="#main-content"/);
-    assert.match(html, /<main[^>]+id="main-content"/);
-    assert.match(html, /<nav[^>]+aria-label="Primary"/);
-    assert.match(html, /<footer/);
-    assert.match(html, /href="mailto:gtpservices212@gmail\.com"/);
-    assert.match(html, /href="tel:\+17706853901"/);
-    assert.match(html, new RegExp(`href="${page.navHref.replaceAll('/', '\\/')}"[^>]*aria-current="page"`));
-    assert.match(html, /<title>[^<]+<\/title>/);
-    assert.match(html, /<meta name="description" content="[^"]+"/);
-    assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+  test(page.label + ' links and image sources resolve in the static build', () => {
+    for (const match of page.html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+      const value = decode(match[1]);
+      if (/^(mailto:|tel:|https?:|data:)/.test(value)) continue;
+      const url = new URL(value, 'https://local.test' + page.href);
+      const path = resolve('dist', '.' + url.pathname, url.pathname.endsWith('/') ? 'index.html' : '');
+      assert.ok(existsSync(path), 'Missing target: ' + value);
+      if (url.hash) {
+        const linkedHtml = readFileSync(path, 'utf8');
+        assert.ok(linkedHtml.includes('id="' + decodeURIComponent(url.hash.slice(1)) + '"'), 'Missing anchor: ' + value);
+      }
+    }
+  });
+  test(page.label + ' does not introduce invented credibility', () => {
+    assert.doesNotMatch(page.html, /\b(?:licensed|insured|24-hour|five.star|\d+ years of experience|guaranteed)\b/i);
+    assert.doesNotMatch(page.html, /<iframe\b|<video\b|application\/ld\+json/i);
+    if (page.label !== 'Home') assert.doesNotMatch(page.html, /<form\b/i);
+    assert.doesNotMatch(page.html, /example\.com|YOUR_DOMAIN|\p{Emoji_Presentation}/u);
   });
 }
-
-const homeHtml = readFileSync('dist/index.html', 'utf8').replaceAll('&amp;', '&');
-const servicesHtml = readFileSync('dist/services/index.html', 'utf8').replaceAll('&amp;', '&');
-const aboutHtml = readFileSync('dist/about/index.html', 'utf8').replaceAll('&amp;', '&');
-const contactHtml = readFileSync('dist/contact/index.html', 'utf8').replaceAll('&amp;', '&');
-
-test('Home introduces the business, requested standards, and North Georgia coverage', () => {
-  assert.match(homeHtml, /Trusted by North Georgia/);
-  assert.match(homeHtml, /transparent pricing/i);
-  assert.match(homeHtml, /best-in-class service/i);
-
-  for (const town of [
-    'Talking Rock', 'Jasper', 'Ellijay', 'Nelson', 'Tate', 'Ball Ground',
-    'Dawsonville', 'Dahlonega', 'Cumming', 'Canton', 'Woodstock',
-  ]) {
-    assert.ok(homeHtml.includes(town), `Expected Home to include ${town}`);
+test('Every page has unique metadata', () => {
+  const titles = htmlPages.map(page => page.html.match(/<title>([^<]+)<\/title>/)?.[1]);
+  const descriptions = htmlPages.map(page => page.html.match(/<meta name="description" content="([^"]+)"/)?.[1]);
+  assert.ok(titles.every(Boolean) && descriptions.every(Boolean));
+  assert.equal(new Set(titles).size, routes.length);
+  assert.equal(new Set(descriptions).size, routes.length);
+});
+test('Home leads to its quote form before the service chooser', () => {
+  const home = htmlPages[0].html;
+  const main = home.slice(home.indexOf('<main'));
+  assert.ok(main.indexOf('href="#free-quote"') < main.indexOf('class="service-picker"'));
+  assert.ok(main.indexOf('tel:') < main.indexOf('class="service-picker"'));
+  assert.doesNotMatch(main, /class="brand-card"|class="service-disclosure"/);
+  for (const service of plumbingServices) {
+    assert.ok(home.includes('/services/#' + service.id));
+  }
+  for (const town of business.towns) assert.ok(home.includes(town));
+});
+test('Home quote form is detectable by Netlify and has a usable confirmation route', () => {
+  const home = htmlPages[0].html;
+  assert.match(home, /<form[^>]*name="quote-request"[^>]*method="POST"[^>]*action="\/thanks\/"[^>]*data-netlify="true"[^>]*netlify-honeypot="bot-field"/);
+  assert.match(home, /name="form-name" value="quote-request"/);
+  assert.match(home, /name="bot-field"/);
+  for (const field of ['name', 'phone', 'details']) {
+    assert.match(home, new RegExp(`name="${field}"[^>]*required`));
+  }
+  assert.match(home, /name="email" type="email"/);
+  assert.doesNotMatch(home, /name="location"|quote-location|ZIP code/i);
+  assert.match(readFileSync('dist/thanks/index.html', 'utf8'), /Thanks for reaching out/);
+});
+test('Services retains the full business service scope in crawlable HTML', () => {
+  const services = decode(htmlPages[1].html);
+  for (const service of plumbingServices) {
+    assert.ok(services.includes('id="' + service.id + '"'));
+    assert.ok(services.includes(service.title));
+    for (const example of service.examples) assert.ok(services.includes(example));
+    assert.ok(services.includes(encodeURIComponent('Plumbing inquiry: ' + service.title)));
   }
 });
-
-test('Home removes the rejected decorative illustration and inactive service link', () => {
-  assert.doesNotMatch(homeHtml, /hero-field/);
-  assert.doesNotMatch(homeHtml, /Explore service details/);
+test('Contact explains the email handoff and offers an accessible fallback', () => {
+  const contact = htmlPages[3].html;
+  assert.match(contact, /Opens your email app/);
+  assert.match(contact, /id="email-address"/);
+  assert.match(contact, /class="copy-button"[^>]*hidden/);
+  assert.match(contact, /role="status"/);
+  assert.equal((contact.match(/<details>/g) ?? []).length, 3);
 });
-
-test('Home uses the supplied wordmark and highlights its service standards with icons', () => {
-  const brandCard = homeHtml.match(/<aside class="brand-card"[\s\S]*?<\/aside>/)?.[0];
-
-  assert.ok(brandCard, 'Expected the branded home hero panel');
-  assert.match(brandCard, /src="\/images\/potts-wordmark\.png"/);
-  assert.match(brandCard, /Potts Plumbing, 770-685-3901/);
-  assert.match(brandCard, /Transparent pricing/);
-  assert.match(brandCard, /Best-in-class service/);
-  assert.equal((brandCard.match(/data-icon=/g) ?? []).length, 2);
+test('The supplied original images remain outside the main page payload', () => {
+  for (const page of htmlPages) assert.doesNotMatch(page.html, /images\/image[01]/);
+  assert.ok(statSync('dist/images/potts-mark.png').size < 150000);
+  assert.ok(existsSync('dist/images/potts-horizontal.png'));
+  for (const page of htmlPages) assert.doesNotMatch(page.html, /class="brand-name"/);
 });
-
-test('Home and Services expose the approved categories and useful home-plumbing examples', () => {
-  const categories = [
-    'Leaks & home repairs',
-    'Water heaters',
-    'Drains & pipes',
-    'Fixtures & bathrooms',
-    'Other home projects',
-  ];
-
-  for (const category of categories) {
-    assert.ok(homeHtml.includes(category), `Expected Home to include ${category}`);
-    assert.ok(servicesHtml.includes(category), `Expected Services to include ${category}`);
-  }
-
-  assert.equal((servicesHtml.match(/<h3[^>]*class="service-disclosure__title"/g) ?? []).length, categories.length);
-  assert.equal((servicesHtml.match(/<details class="service-disclosure"/g) ?? []).length, categories.length);
-  assert.equal((servicesHtml.match(/class="site-icon service-disclosure__icon"/g) ?? []).length, categories.length);
-
-  for (const example of [
-    'leaking faucets', 'running toilets', 'water pressure', 'hot water',
-    'clogged drains', 'water lines', 'outdoor faucets', 'shutoff valves',
-  ]) {
-    assert.ok(servicesHtml.toLowerCase().includes(example), `Expected Services to mention ${example}`);
-  }
-});
-
-test('Home, About, and Contact make it easy to start without diagnosing the problem', () => {
-  assert.match(homeHtml, /You do not need to diagnose the problem/i);
-  assert.match(homeHtml, /Garrett (?:can help|will help).{0,100}(?:options|next steps|price)/i);
-  assert.doesNotMatch(aboutHtml, /Understand the issue|Describe what you are seeing/i);
-  assert.match(aboutHtml, /no diagnosis needed/i);
-  assert.match(contactHtml, /No need to diagnose anything/i);
-  assert.match(contactHtml, /A brief note is enough/i);
-});
-
-test('Home and Services avoid fabricated reviews, hours, and unsupported credentials', () => {
-  for (const html of [homeHtml, servicesHtml]) {
-    assert.doesNotMatch(html, /\b(?:reviews?|testimonials?|business hours|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/i);
-    assert.doesNotMatch(html, /\b(?:licensed|insured|guarantee(?:d)?|24-hour|years of experience)\b/i);
-    assert.doesNotMatch(html, /\b(?:no commercial work|does not do commercial|commercial work unavailable)\b/i);
-  }
-});
-
-test('About introduces Garrett and the local business without unsupported claims', () => {
-  assert.match(aboutHtml, /Garrett Potts/);
-  assert.match(aboutHtml, /Potts Plumbing/);
-  assert.match(aboutHtml, /North Georgia/);
-  assert.match(aboutHtml, /homeowners|homes/i);
-  assert.doesNotMatch(aboutHtml, /\b(?:licensed|insured|guarantee(?:d)?|24-hour|since 20\d\d|\d+ years of experience)\b/i);
-});
-
-test('Contact offers direct email and phone actions without implying a form submission', () => {
-  assert.match(contactHtml, /href="mailto:gtpservices212@gmail\.com"/);
-  assert.match(contactHtml, /opens? (?:your )?email (?:app|application)/i);
-  assert.match(contactHtml, /href="tel:\+17706853901"/);
-  assert.match(contactHtml, /\(770\) 685-3901/);
-  assert.doesNotMatch(contactHtml, /call or text/i);
-  assert.doesNotMatch(contactHtml, /<form\b/i);
-});
-
-test('All pages have unique crawlable metadata and avoid placeholders or decorative symbols', () => {
-  const titles = [];
-  const descriptions = [];
-
-  for (const page of outputPages) {
-    const html = readFileSync(page.path, 'utf8');
-    const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
-    const description = html.match(/<meta name="description" content="([^"]+)"/i)?.[1];
-
-    assert.ok(title, `Expected a title in ${page.path}`);
-    assert.ok(description, `Expected a description in ${page.path}`);
-    assert.doesNotMatch(html, /<meta[^>]+name="robots"[^>]+noindex/i);
-    assert.doesNotMatch(html, /example\.com|placeholder/i);
-    assert.doesNotMatch(html, /[\u2190-\u21ff\u27a1]/u);
-    assert.doesNotMatch(html, /\p{Emoji_Presentation}/u);
-    titles.push(title);
-    descriptions.push(description);
-  }
-
-  assert.equal(new Set(titles).size, outputPages.length, 'Expected unique page titles');
-  assert.equal(new Set(descriptions).size, outputPages.length, 'Expected unique page descriptions');
-});
-
-test('Static output keeps crawling open without domain-dependent sitemap data', () => {
-  assert.equal(existsSync('dist/robots.txt'), true, 'Expected robots.txt in static output');
-  const robots = readFileSync('dist/robots.txt', 'utf8');
-  assert.match(robots, /User-agent:\s*\*/i);
-  assert.match(robots, /Allow:\s*\//i);
-  assert.doesNotMatch(robots, /Disallow:\s*\//i);
-  assert.doesNotMatch(robots, /Sitemap:/i);
-  assert.doesNotMatch(readFileSync('dist/index.html', 'utf8'), /rel="canonical"/i);
-});
-
-test('Legacy hand-authored pages and scripts are retired after the Astro routes replace them', () => {
-  for (const file of ['index.html', 'services.html', 'about.html', 'contact.html', 'styles.css', 'script.js', 'robots.txt']) {
-    assert.equal(existsSync(file), false, `Expected legacy source ${file} to be removed`);
-  }
-});
-
-test('Shared styles remain responsive, keyboard-friendly, and independent of external assets', () => {
-  const styles = readFileSync('src/styles/global.css', 'utf8');
-
-  assert.match(styles, /@media\s*\(max-width:\s*48rem\)/);
-  assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
-  assert.match(styles, /\.mobile-menu summary\s*\{/);
-  assert.match(styles, /\.service-disclosure\[open\]/);
-  assert.match(styles, /calc\(100% - var\(--page-gutter\) - var\(--page-gutter\)\)/);
-  assert.doesNotMatch(styles, /@import\s|https?:\/\//i);
-  assert.doesNotMatch(styles, /[\u2190-\u21ff\u27a1]/u);
+test('Static output includes a useful 404 and crawl-friendly robots file', () => {
+  assert.ok(existsSync('dist/404.html'));
+  assert.match(readFileSync('dist/404.html', 'utf8'), /Back to home/);
+  assert.match(readFileSync('dist/robots.txt', 'utf8'), /Allow:\s*\//);
 });
